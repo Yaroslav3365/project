@@ -1,0 +1,7 @@
+Car images used in the demo are loaded from Wikimedia Commons via Special:FilePath.
+Volvo XC90: https://commons.wikimedia.org/wiki/File:Volvo_XC90_front-1.JPG
+Renault Clio: https://commons.wikimedia.org/wiki/File:Renault-Clio.jpg
+Chery Arrizo 5: https://commons.wikimedia.org/wiki/File:Chery_Arrizo_5.jpg
+Seat Ibiza: https://commons.wikimedia.org/wiki/File:Seat_Ibiza_1.jpg
+Skoda Enyaq: https://commons.wikimedia.org/wiki/File:Skoda_Enyaq.jpg
+Check each file page for its license/author before production use.

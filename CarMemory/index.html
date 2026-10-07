@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carcare Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Phosphor Icons -->
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="auth-locked">
+<section class="auth-screen" id="authScreen">
+  <form class="auth-card" id="authForm">
+    <div class="auth-brand"><i class="ph ph-car-profile"></i><span>CarMemory</span></div>
+    <h1 data-i18n="auth_title">Sign in to your garage</h1>
+    <p data-i18n="auth_desc">Enter your details to open your car dashboard.</p>
+    <label><span data-i18n="auth_name">Name</span><input id="authName" autocomplete="name" placeholder="Alex"></label>
+    <label><span data-i18n="auth_email">Email</span><input id="authEmail" type="email" autocomplete="email" required placeholder="alex@example.com"></label>
+    <label><span data-i18n="auth_password">Password</span><input id="authPassword" type="password" autocomplete="current-password" required placeholder="••••••••"></label>
+    <p class="auth-error" id="authError" aria-live="polite"></p>
+    <button class="primary-button" data-i18n="auth_submit">Sign in</button>
+    <button class="secondary-button" type="button" id="registerButton" data-i18n="register_account">Register</button>
+    <button class="secondary-button" type="button" id="testAccountButton" data-i18n="test_account">Use test account</button>
+  </form>
+</section>
+<div class="app">
+<aside class="sidebar">
+  <a class="brand" href="#"><i class="ph ph-car-profile" style="font-size: 28px; color: var(--blue);"></i><span>CarMemory</span></a>
+  <nav class="main-nav">
+    <a class="nav-item active" href="#dashboard"><i class="ph ph-squares-four"></i><span data-i18n="nav_dashboard">Dashboard</span></a>
+    <a class="nav-item" href="#vehicle"><i class="ph ph-car"></i><span data-i18n="nav_servicing">Servicing</span></a>
+    <a class="nav-item" href="#reminders"><i class="ph ph-bell"></i><span data-i18n="nav_reminders">Reminders</span></a>
+    <a class="nav-item" href="#account"><i class="ph ph-user"></i><span data-i18n="nav_account">Account</span></a>
+  </nav>
+  <a class="nav-item support" href="#support"><i class="ph ph-headphones"></i><span data-i18n="nav_support">Support</span></a>
+  <a class="nav-item" style="margin-top:10px" data-open="settingsModal"><i class="ph ph-globe"></i><span data-i18n="nav_settings">Settings</span></a>
+</aside>
+
+<main class="main-content">
+<header class="topbar">
+  <div class="search-wrap"><i class="ph ph-magnifying-glass"></i><input id="searchInput" type="search" placeholder="Search providers, cars..." data-i18n-placeholder="search_placeholder"></div>
+  <div class="topbar-actions">
+    <button class="icon-button" id="notificationButton"><i class="ph ph-bell"></i></button>
+    <button class="primary-button" data-open="serviceModal" data-i18n="btn_book_service">Book service</button>
+  </div>
+</header>
+
+<section class="page-section active" id="dashboard">
+  <section class="vehicle-card">
+    <div class="vehicle-main">
+      <div class="vehicle-selection">
+        <div class="row-between"><h2 data-i18n="your_vehicle">Your vehicle selection</h2></div>
+        <div class="car-list" id="carList">
+          <!-- Cars injected by JS -->
+        </div>
+        <div class="selected-car">
+          <div class="car-visual"><img id="carVisual" src="" alt="Selected Car"></div>
+          <div class="selected-car-info">
+            <h2 id="selectedCarName">Volvo XC90</h2>
+            <button class="secondary-button" data-section-link="vehicle" data-i18n="general_info">General information</button>
+          </div>
+        </div>
+      </div>
+      <div class="vehicle-stats">
+        <div class="stat-card"><span><i class="ph ph-calendar-blank"></i> <span data-i18n="last_service">Last service date</span></span><strong id="lastServiceDateValue">27- Aug -24</strong></div>
+        <div class="stat-card"><span><i class="ph ph-wrench"></i> <span data-i18n="total_services">Total Services</span></span><strong id="serviceCount">16</strong></div>
+        <div class="maintenance-card">
+          <span data-i18n="upcoming_maintenance">Upcoming maintenance</span>
+          <div class="maintenance-title" id="upcomingMaintenanceTitle"><i class="ph ph-drop"></i> Oil change in 5 days</div>
+          <p data-i18n="maintenance_desc">Replacing the old engine oil and filter helps to keep the engine running smoothly and extend its lifespan.</p>
+          <div class="maintenance-meta">
+            <div><small data-i18n="estimated_cost">Estimated cost</small><strong id="upcomingCostText">$70</strong></div>
+            <div><small data-i18n="provider">Provider</small><strong>AutoCare C...</strong></div>
+            <div><small data-i18n="due_date">Due date</small><strong>Sep 15, 2024</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="dashboard-grid">
+    <section class="panel">
+      <div class="panel-header">
+        <div><h2 data-i18n="service_history">Service history</h2></div>
+        <button class="small-button" data-open="serviceModal" data-i18n="add_service">Add a Service</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th data-i18n="date">Date</th><th data-i18n="service_type">Service Type</th><th data-i18n="provider">Provider</th><th data-i18n="cost">Cost</th><th></th></tr></thead>
+          <tbody id="serviceTable"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-header"><div><h2 data-i18n="health_indicators">Health indicators</h2></div></div>
+      <div class="health-grid">
+        <article class="health-card"><i class="ph ph-sparkle" style="font-size: 24px; color: var(--blue); margin-bottom: 8px; display: block;"></i><h3 data-i18n="spark_plug">Spark plug</h3><span data-i18n="spark_plug_desc">Sparkplug wear: 75% life</span><div class="progress"><span style="width:75%"></span></div></article>
+        <article class="health-card"><i class="ph ph-circle-dashed" style="font-size: 24px; color: var(--green); margin-bottom: 8px; display: block;"></i><h3 data-i18n="brake_condition">Brake condition</h3><span data-i18n="brake_desc">Front Break pads: 70% life</span><div class="progress"><span style="width:70%"></span></div></article>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="page-section" id="vehicle">
+  <div class="section-heading"><h1 data-i18n="expenses_chart">Expenses & Chart</h1></div>
+  <div class="stats-grid">
+    <div class="panel big-stat"><span data-i18n="total_spent">Total spent</span><strong id="totalExpenses">$0</strong></div>
+    <div class="panel big-stat"><span data-i18n="average_expense">Average expense</span><strong id="averageExpense">$0</strong></div>
+  </div>
+  <div class="panel chart-panel">
+    <div class="panel-header"><h2 data-i18n="service_expenses">Service Expenses</h2></div>
+    <div class="chart-container" style="position: relative; height:250px; width:100%">
+      <canvas id="expenseChartCanvas"></canvas>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th data-i18n="date">Date</th><th data-i18n="service_type">Type</th><th data-i18n="provider">Provider</th><th data-i18n="cost">Cost</th><th data-i18n="action">Action</th></tr></thead>
+        <tbody id="serviceTableFull"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="page-section" id="reminders"><div class="section-heading"><h1 data-i18n="nav_reminders">Reminders</h1></div></section>
+<section class="page-section" id="account">
+  <div class="section-heading"><h1 data-i18n="nav_account">Account Settings</h1></div>
+  <div class="panel account-card">
+    <span data-i18n="signed_in_as">Signed in as</span>
+    <strong id="accountUserName">-</strong>
+    <small id="accountUserEmail">-</small>
+    <button class="secondary-button" id="logoutButton" data-i18n="logout">Log out</button>
+  </div>
+</section>
+<section class="page-section" id="support"><div class="section-heading"><h1 data-i18n="nav_support">Support</h1></div></section>
+</main>
+</div>
+
+<!-- Modals as native dialogs -->
+<dialog id="serviceModal" class="modal-dialog">
+  <button class="modal-close" data-close>×</button>
+  <h2 data-i18n="add_service">Add Service</h2>
+  <form id="serviceForm">
+    <label><span data-i18n="service_type">Type</span>
+      <select id="serviceType" required>
+        <option value="Oil change" data-i18n="opt_oil">Oil change</option>
+        <option value="Tire Rotation" data-i18n="opt_tire">Tire Rotation</option>
+        <option value="Brake Inspection" data-i18n="opt_brake">Brake Inspection</option>
+        <option value="Diagnostics" data-i18n="opt_diag">Diagnostics</option>
+        <option value="Other" data-i18n="opt_other">Other</option>
+      </select>
+    </label>
+    <label id="customServiceWrap" class="is-hidden"><span data-i18n="custom_service">What exactly was repaired / replaced</span><input id="customService" placeholder="e.g. Battery replacement"></label>
+    <label><span data-i18n="provider">Provider</span><input id="provider" required placeholder="AutoCare Service"></label>
+    <label><span data-i18n="cost_label">Cost ($)</span><input id="cost" type="number" min="0" required placeholder="70"></label>
+    <label><span data-i18n="date">Date</span><input id="serviceDate" type="date" required></label>
+    <div class="form-actions">
+      <button type="button" class="secondary-button" data-close data-i18n="cancel">Cancel</button>
+      <button class="primary-button" data-i18n="save">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Settings Modal -->
+<dialog id="settingsModal" class="modal-dialog">
+  <button class="modal-close" data-close>×</button>
+  <h2 data-i18n="nav_settings">Settings</h2>
+  <form id="settingsForm">
+    <label><span data-i18n="language">Language</span>
+      <select id="languageSelect">
+        <option value="en">English</option>
+        <option value="uk">Українська</option>
+        <option value="de">Deutsch</option>
+      </select>
+    </label>
+    <label><span data-i18n="theme">Theme</span>
+      <select id="themeSelect">
+        <option value="dark" data-i18n="theme_dark">Dark</option>
+        <option value="light" data-i18n="theme_light">Light</option>
+      </select>
+    </label>
+  </form>
+</dialog>
+
+<div class="toast" id="toast"></div>
+<script src="js/app.js"></script>
+</body>
+</html>
